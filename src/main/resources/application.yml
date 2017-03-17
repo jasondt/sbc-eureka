@@ -1,0 +1,69 @@
+debug: false
+
+username: dev
+password: welcome1
+
+info:
+  component: Eureka
+
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+
+server:
+  port: 8301
+  compression:
+    enabled: true
+    mime-types: application/json, application/hal+json, text/html, text/plain
+#  tomcat:
+#    accesslog:
+#      directory: ${logging.path}
+#      enabled: false
+#      pattern: common
+
+security:
+  basic:
+    enabled: false
+  user:
+    name: ${username}
+    password: ${password}
+management:
+  contextPath: /
+#  health:
+#    diskspace:
+#      path: ${logging.path}
+  security:
+    enabled: false
+
+logging:
+  path: /var/log/${spring.application.name}
+  level:
+    root: INFO
+    #com.netflix.discovery: 'OFF'
+    org.springframework: INFO
+    org.springframework.integration: INFO
+    org.springframework.amqp: INFO
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+spring:
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: 5672
+    username: admin
+    password: admin
+
+---
+spring:
+  profiles: docker
+  rabbitmq:
+    host: ${RABBIT_HOST:RABBIT_PORT_5672_TCP_ADDR:localhost}

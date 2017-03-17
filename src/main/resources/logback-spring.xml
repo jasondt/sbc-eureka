@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProperty scope="context" name="spring.application.name" source="spring.application.name" defaultValue="localhost"/>
+
+    <appender name="GELF" class="org.springframework.amqp.rabbit.logback.AmqpAppender">
+        <layout class="de.siegmar.logbackgelf.GelfLayout">
+            <!--<originHost>localhost</originHost>-->
+            <includeRawMessage>false</includeRawMessage>
+            <includeMarker>true</includeMarker>
+            <includeMdcData>true</includeMdcData>
+            <includeCallerData>false</includeCallerData>
+            <includeRootCauseData>true</includeRootCauseData>
+            <includeLevelName>false</includeLevelName>
+            <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m%nopex</pattern>
+            </shortPatternLayout>
+            <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m</pattern>
+            </fullPatternLayout>
+            <staticField>app_name:${spring.application.name}</staticField>
+            <!--<staticField>os_arch:${os.arch}</staticField>-->
+            <!--<staticField>os_name:${os.name}</staticField>-->
+            <!--<staticField>os_version:${os.version}</staticField>-->
+        </layout>
+        <!-- <abbreviation>36</abbreviation --> <!-- no category abbreviation by default -->
+        <applicationId>${spring.application.name}</applicationId>
+        <exchangeName>logs</exchangeName>
+        <routingKeyPattern>%property{applicationId}.%c.%p</routingKeyPattern>
+        <generateId>true</generateId>
+        <charset>UTF-8</charset>
+        <durable>false</durable>
+        <deliveryMode>NON_PERSISTENT</deliveryMode>
+    </appender>
+
+    <appender name="ASYNC GELF" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="GELF" />
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="ASYNC GELF" />
+    </root>
+</configuration>
